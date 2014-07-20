@@ -6,4 +6,4 @@ run:
 
 test:
 	cd demo && docker build -t simplepaas/demo .
-	docker run --rm -p 80 simplepaas/demo
+	docker run --rm -p 80 -e VIRTUAL_HOST=${CNAME} simplepaas/demo
