@@ -10,5 +10,11 @@
 
 * run `make test CNAME=<your.domain.com>` and access that URL; you should see hello.txt
 
+## running
 
+* run `make run_app CNAME=mypaas.com`
+
+* add http://mypaas.com/webhook as webhook in hub.docker.com
+
+* push your image
 
