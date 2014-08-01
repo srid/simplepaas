@@ -2,9 +2,9 @@
 
 ## install
 
-* get yourself a Digital Ocean Ubuntu 14.04 server VM
+* get yourself a Ubuntu 14.04 server VM
 
-* install Docker
+* install latest Docker (`curl -sSL https://get.docker.io/ubuntu/ | sudo sh`)
 
 * run `./install.sh`
 
