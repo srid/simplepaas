@@ -4,11 +4,14 @@ TODO: simplify instructions
 
 ## install
 
-* get yourself a Ubuntu 14.04 server VM
+on a bare Ubuntu 14.04 server VM, run:
 
-* install latest Docker (`curl -sSL https://get.docker.io/ubuntu/ | sudo sh`)
-
-* run `make install` to install everything
+```
+# install latest docker, *not* the ubuntu docker.io package:
+curl -sSL https://get.docker.io/ubuntu/ | sudo sh`
+# install simplepaas
+make install
+```
 
 ## running
 
@@ -22,3 +25,11 @@ TODO: simplify instructions
 
 * push the image; your app should be deployed (per CNAME specified in
   demo/Dockerfile)
+
+## extras
+
+* **logging**: redirect output of all containers to an external
+  aggregator (such as [papertrail](https://papertrailapp.com/)). this
+  can be done using a single command: `docker run --name=logspout -d
+  -v=/var/run/docker.sock:/tmp/docker.sock progrium/logspout
+  syslog://${SYSLOG_ENDPOINT}`
