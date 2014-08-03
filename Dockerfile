@@ -5,6 +5,7 @@ RUN pip3 install docker-py
 
 ADD . /simplepaas
 WORKDIR /simplepaas
+EXPOSE 80
 CMD ["python3", "-u", "app.py"]
 
 # TODO: have this image automatically bootstrap other containers such as nginx

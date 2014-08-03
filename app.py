@@ -8,10 +8,14 @@ def webhook():
     data = json.loads(request.body.read().decode('utf8'))
     print("got hooked: %s", data)
     repo_name = data["repository"]["repo_name"]
-    print("pulling and restarting container %s" % repo_name)
     d = get_docker()
+    print("pulling and restarting container %s" % repo_name)
     d.pull(repo_name, tag='latest')
+    c.create_container(repo_name)
     # TODO: kill existing container, and start new one
+    # ensure that old one is killed only after new one is ready to be spawned.
+
+    # TODO: pass some env vars to container, like image id.
 
 
 def get_docker():
