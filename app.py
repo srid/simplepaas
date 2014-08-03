@@ -11,7 +11,7 @@ USERS_WHITELIST = set(["srid"])
 def webhook():
     data = json.loads(
         request.body.read().decode('utf8'))
-    print("Hooked from hub.docker.com: %s", data)
+    print("Hooked from hub.docker.com: %s" % data)
     
     repo_name = data["repository"]["repo_name"]
     if repo_name.split('/', 1)[0] not in USERS_WHITELIST:
@@ -29,6 +29,8 @@ def webhook():
         d.remove_container(existing_container, v=True)
 
     run_container(d, repo_name, name=name)
+
+    return "OK"
 
 
 def get_docker():
