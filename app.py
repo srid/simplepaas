@@ -3,8 +3,8 @@ import docker
 from bottle import route, run, template, request
 
 
-# Allow only selected images, for now.
-WHITELIST = set(["srid/simplepaas-demo"])
+# Allow only selected users for now.
+USERS_WHITELIST = set(["srid"])
 
 
 @route("/webhook", method='POST')
@@ -14,8 +14,8 @@ def webhook():
     print("Hooked from hub.docker.com: %s", data)
     
     repo_name = data["repository"]["repo_name"]
-    if repo_name not in WHITELIST:
-        raise ValueError("Blocking hook; %s not in whitelist" % repo_name)
+    if repo_name.split('/', 1)[0] not in USERS_WHITELIST:
+        raise ValueError("Image %s not allowed" % repo_name)
 
     d = get_docker()
     pull_image(d, repo_name)
