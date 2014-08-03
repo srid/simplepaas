@@ -18,8 +18,7 @@ def webhook():
         raise ValueError("Blocking hook; %s not in whitelist" % repo_name)
 
     d = get_docker()
-    print("Downloading image %s" % repo_name)
-    d.pull(repo_name, tag='latest')
+    pull_image(d, repo_name)
 
     name=create_uniq_container_name_for(repo_name)
 
@@ -28,16 +27,8 @@ def webhook():
         print("Killing existing container: %s" % name)
         d.kill(existing_container)
         d.remove_container(existing_container, v=True)
-    
-    print("Starting container off image %s" % repo_name)
-    cont = d.create_container(
-        repo_name,
-        # Give an unique name, so we can delete this container later.
-        name=name,
-        # Limit memory usage
-        # mem_limit=
-    )
-    d.start(cont)
+
+    run_container(d, repo_name, name=name)
 
 
 def get_docker():
@@ -49,9 +40,53 @@ def get_container_by(d, name):
         if name in container['Names']:
             return container
 
-def create_uniq_container_name_for(repo_name):
-    return "simplepaas-%s" % repo_name.replace('/', '-')
+def create_uniq_container_name_for(image_name):
+    return "simplepaas-%s" % image_name.replace('/', '-')
     
+def pull_image(d, image_name):
+    print("Downloading image %s" % image_name)
+    d.pull(image_name, tag='latest')
+
+def run_container(d, image_name, **kwargs):
+    """
+    Convenient function merging separate 'create' and 'start'
+    functions. We just want a Python function representing `docker run`
+    """
+    print("Starting container using image %s and args: %s" % (image_name, kwargs))
+
+    # Split kwargs to pass a subset to start, instead of create
+    start_kwargs = {}
+    start_kwargs_accepted = ['port_bindings', 'binds']
+    for k in start_kwargs_accepted:
+        if k in kwargs:
+            start_kwargs[k] = kwargs[k]
+            del kwargs[k]
+        
+    container = d.create_container(
+        image_name, **kwargs)
+    d.start(container, **start_kwargs)
+
+def start_nginx_proxy():
+    """
+    Start jwilder/nginx-proxy if it is not already running
+    """
+    d = get_docker()
+    image = 'jwilder/nginx-proxy'
+    name = 'simplepaas-nginx'
+    if not get_container_by(d, name):
+        pull_image(d, image)
+        # -p 80:80 -v /var/run/docker.sock:/tmp/docker.sock
+        run_container(
+            d,
+            image,
+            name=name,
+            port_bindings={80: 80},
+            volumes=['/tmp/docker.sock'],
+            binds={'/var/run/docker.sock': {'bind': '/tmp/docker.sock', 'ro': False}}
+        )
+
+
 if __name__ == "__main__":
+    start_nginx_proxy()
     run(host='0.0.0.0', port=80)
 

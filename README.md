@@ -10,14 +10,12 @@ on a bare Ubuntu 14.04 server VM, run:
 # install latest docker, *not* the ubuntu docker.io package:
 curl -sSL https://get.docker.io/ubuntu/ | sudo sh`
 # install simplepaas
-make install
+make
 ```
 
 ## running
 
-* run `make run_nginx` to run ngnix front
-
-* run `make run_app CNAME=yourpaas.yourdomain.com`
+* run `make run CNAME=yourpaas.yourdomain.com`
 
 * go to hub.docker.com and add a wehbook for
   yourpaas.yourdomain.com/webhook in your trusted build for the ./demo

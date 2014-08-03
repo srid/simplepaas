@@ -1,29 +1,15 @@
 IMG := srid/simplepaas
 
-install:
-	docker pull jwilder/nginx-proxy
+all:
 	docker build -t ${IMG} .
 
-run:	run_nginx run_app
-	@true
-
-# http routing for containers
-run_nginx:
-	docker rm -vf nginx || true
-	docker run -d --name=nginx \
-		-p 80:80 -v /var/run/docker.sock:/tmp/docker.sock jwilder/nginx-proxy
-
-# wehbook app 
-run_app:
+run:
 	docker run --rm --name=simplepaas \
 		-v /var/run/docker.sock:/tmp/docker.sock -e VIRTUAL_HOST=${CNAME} ${IMG}
 
+# for debugging.
 shell:
 	docker run --rm --name=simplepaas-shell \
 		-i -t -v /var/run/docker.sock:/tmp/docker.sock ${IMG} bash
-
-test:
-	cd demo && docker build -t ${IMG}-demo-local .
-	docker run --rm -p 80 ${IMG}-demo-local
 
 
