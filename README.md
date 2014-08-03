@@ -6,7 +6,7 @@
 
 * install latest Docker (`curl -sSL https://get.docker.io/ubuntu/ | sudo sh`)
 
-* run `./install.sh`
+* run `make install`
 
 * run `make test CNAME=<your.domain.com>` and access that URL; you should see hello.txt
 
@@ -17,4 +17,3 @@
 * add http://mypaas.com/webhook as webhook in hub.docker.com
 
 * push your image
-

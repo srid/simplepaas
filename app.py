@@ -3,15 +3,22 @@ import docker
 from bottle import route, run, template, request
 
 
+WHITELIST = set(["srid/simplepaas-demo"])
+
+
 @route("/webhook", method='POST')
 def webhook():
     data = json.loads(request.body.read().decode('utf8'))
-    print("got hooked: %s", data)
+    print("Hooked from hub.docker.com: %s", data)
     repo_name = data["repository"]["repo_name"]
+    if repo_name not in WHITELIST:
+        raise ValueError("Blocking hook; %s not in whitelist" % repo_name)
+    print("Downloading image %s" % repo_name)
     d = get_docker()
-    print("pulling and restarting container %s" % repo_name)
     d.pull(repo_name, tag='latest')
-    c.create_container(repo_name)
+    print("Starting container off image %s" % repo_name)
+    cont = d.create_container(repo_name)
+    d.start(cont)
     # TODO: kill existing container, and start new one
     # ensure that old one is killed only after new one is ready to be spawned.
 
